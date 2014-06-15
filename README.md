@@ -15,4 +15,4 @@ For example: if you sell pencils - you can create group for colorings and displa
 
 Install:
 ==========
-1) <a href="https://code.google.com/p/vqmod/wiki/Install_OpenCart">Install vQmod</a>
+1) <a href="https://code.google.com/p/vqmod/wiki/Install_OpenCart" target="_blank">Install vQmod</a>
