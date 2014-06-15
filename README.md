@@ -12,6 +12,6 @@ For example: if you sell pencils - you can create group for colorings and displa
 - Products display randomly
 - Not fat and does not slow CMS
 - Simple usage
-
-==========
 Install:
+==========
+
