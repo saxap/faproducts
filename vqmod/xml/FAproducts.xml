@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+        <id>FAproduct module vQchanges</id>
+        <version>1.0</version>
+        <vqmver>2.X</vqmver>
+        <author>saxa:p (saxap@bk.ru)</author>
+        <file name="admin/controller/common/header.php">
+                <operation error="log" info="a.c.c.h">
+                        <search position="after"><![CDATA[
+                        $this->data['direction'] = $this->language->get('direction');
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        $this->load->language('common/facommon');
+                        $this->data['text_facategory'] = $this->language->get('fagroups');
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+                <operation error="log" info="a.c.c.h.l">
+                        <search position="after"><![CDATA[
+                        $this->data['category'] = $this->url->link('catalog/category', 'token=' . $this->session->data['token'], 'SSL');
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        $this->data['facategory'] = $this->url->link('catalog/facategory', 'token=' . $this->session->data['token'], 'SSL');
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+        </file>
+        <file name="admin/view/template/common/header.tpl">
+                <operation error="log" info="a.v.c.h">
+                        <search position="after"><![CDATA[
+                        <li><a href="<?php echo $information; ?>"><?php echo $text_information; ?></a></li>
+                        ]]></search>
+                        <add><![CDATA[
+                        <!-- FAproduct -->
+                        <li><a href="<?php echo $facategory; ?>"><?php echo $text_facategory; ?></a></li>
+                        <!-- FAproduct -->
+                        ]]></add>
+                </operation>
+        </file>
+
+
+
+
+        <file name="admin/controller/catalog/product.php">
+                <operation error="log" info="a.c.p">
+                        <search position="before"><![CDATA[
+                        if (isset($this->request->post['product_related'])) {
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        $this -> load -> model('catalog/faproduct');
+                        $this -> data['faproduct_facategory_all'] = $this -> model_catalog_faproduct ->getFACategories();
+                        if (isset($this -> request -> post['faproduct_facategory'])) {
+                                 $this -> data['faproduct_facategory'] = array();
+                        } elseif (isset($this -> request -> get['product_id'])) {
+                                $this -> data['faproduct_facategory'] = $this -> model_catalog_faproduct -> getFAproductCats($this -> request -> get['product_id']);
+                        } else {
+                        $this -> data['faproduct_facategory'] = array();
+                        }
+                        if (isset($this->request->post['facategory_show'])) {
+                            $this->data['facategory_show'] = $this->request->post['facategory_show'];
+                        } elseif (isset($product_info)) {
+                            $this->data['facategory_show'] = $this->model_catalog_faproduct -> getFAcategoryShow($this->request->get['product_id']);
+                        } else {
+                            $this->data['facategory_show'] = 0;
+                        }
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+                <operation error="log" info="a.c.p-lang">
+                        <search position="after"><![CDATA[
+                        $this->document->setTitle($this->language->get('heading_title'));
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        $this->load->language('common/facommon');
+                        $this->data['show_fa_in_product'] = $this->language->get('product_groups');
+                        $this->data['show_group'] = $this->language->get('show_group');
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+        </file>
+        <file name="admin/model/catalog/product.php">
+                <operation error="log" info="a.m.c.p-add">
+                        <search position="before" index="1"><![CDATA[
+                        if (isset($data['product_category'])) {
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        if (isset($data['faproduct_facategory'])) {
+                                foreach ($data['faproduct_facategory'] as $category_id) {
+                                        $this->db->query("INSERT INTO " . DB_PREFIX . "faproduct_to_facategory SET 
+                                        product_id = '" . (int)$product_id . "', 
+                                        facategory_id = '" . (int)$category_id . "'"
+                                        );
+                                }
+                        }
+                        if (isset($data['facategory_show'])) {
+                            $this->db->query("INSERT INTO " . DB_PREFIX . "facategory_to_faproduct SET 
+                                        product_id = '" . (int)$product_id . "', 
+                                        facategory_id = '" . (int)$data['facategory_show'] . "'"
+                                        );
+                        }
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+                <operation error="log" info="a.m.c.p-edit">
+                        <search position="before" index="2"><![CDATA[
+                        if (isset($data['product_category'])) {
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        if (isset($data['faproduct_facategory'])) {
+                                $this->load->model('catalog/faproduct');
+                                $this->model_catalog_faproduct->setFAproductCats((int)$product_id, $data['faproduct_facategory']);
+                        }
+                        if (isset($data['facategory_show'])) {
+                            $this->db->query("DELETE FROM " . DB_PREFIX . "facategory_to_faproduct WHERE product_id = '" . (int)$product_id . "'");
+                            if ($data['facategory_show'] != 0) {
+                                $this->db->query("INSERT INTO " . DB_PREFIX . "facategory_to_faproduct SET 
+                                            product_id = '" . (int)$product_id . "', 
+                                            facategory_id = '" . (int)$data['facategory_show'] . "'"
+                                            );
+                            }
+                        } 
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+                <operation error="log" info="a.m.c.p-copy">
+                        <search position="after" index="2"><![CDATA[
+                        $data = array_merge($data, array('product_category' => $this->getProductCategories($product_id)));
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        $this -> load -> model('catalog/faproduct');
+                        $data = array_merge($data, array('faproduct_facategory' => $this->model_catalog_faproduct ->getFAProductCategories($product_id)));
+                        $data = array_merge($data, array('faproduct_facategory' => $this->model_catalog_faproduct ->getFAcategoryShow($product_id)));
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+                <operation error="log" info="a.m.c.p-delete">
+                        <search position="after" index="2"><![CDATA[
+                        $this->db->query("DELETE FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int)$product_id . "'");
+                        ]]></search>
+                        <add><![CDATA[
+                        /* FAproduct */
+                        $this->db->query("DELETE FROM " . DB_PREFIX . "faproduct_to_facategory WHERE product_id = '" . (int)$product_id . "'");
+                        $this->db->query("DELETE FROM " . DB_PREFIX . "facategory_to_faproduct WHERE product_id = '" . (int)$product_id . "'");
+                        /* FAproduct */
+                        ]]></add>
+                </operation>
+        </file>
+        <file name="admin/view/template/catalog/product_form.tpl">
+                <operation error="log" info="a.v.c.p">
+                        <search position="before"><![CDATA[
+                        <td><?php echo $entry_store; ?></td>
+                        ]]></search>
+                        <add><![CDATA[
+                        <!-- FAproduct -->
+                        <tr>
+                                <td><?php echo $show_fa_in_product; ?></td>
+                                <td>
+                                <div class="scrollbox facats">
+                                <?php $class = 'odd'; ?>
+                                <?php foreach ($faproduct_facategory_all as $category) { ?>
+                                        <?php $class = ($class == 'even' ? 'odd' : 'even'); ?>
+                                        <div class="<?php echo $class; ?>">
+                                        <?php if (in_array($category['facategory_id'], $faproduct_facategory)) { ?>
+                                                <input type="checkbox" name="faproduct_facategory[]" value="<?php echo $category['facategory_id']; ?>" checked="checked" />
+                                                <?php echo $category['name']; ?>
+                                        <?php } else { ?>
+                                                <input type="checkbox" name="faproduct_facategory[]" value="<?php echo $category['facategory_id']; ?>" />
+                                                <?php echo $category['name']; ?>
+                                        <?php } ?>
+                                        </div>
+                                <?php } ?>
+                                </div>
+                                </td>
+                        </tr>
+                        <tr>
+                          <td><?php echo $show_group; ?></td>
+                          <td><select name="facategory_show">
+                            <option value="0" selected="selected"><?php echo $text_none; ?></option>
+                            <?php foreach ($faproduct_facategory_all as $category) { ?>
+                            <?php if ($category['facategory_id'] == $facategory_show) { ?>
+                            <option value="<?php echo $category['facategory_id']; ?>" selected="selected"><?php echo $category['name']; ?></option>
+                            <?php } else { ?>
+                            <option value="<?php echo $category['facategory_id']; ?>"><?php echo $category['name']; ?></option>
+                            <?php } ?>
+                            <?php } ?>
+                          </select></td>
+                        </tr>
+                        <!-- FAproduct -->
+                        ]]></add>
+                </operation>
+        </file>
+</modification>
