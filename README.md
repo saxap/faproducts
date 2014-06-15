@@ -7,8 +7,11 @@ This module allows you to create special recommended groups and bind products to
 For example: if you sell pencils - you can create group for colorings and display products from these group on pencils product pages.
 Сapabilities:
 ==========
-Unlimited number of groups
-One product can be assigned to multiple groups
-Products display randomly
-Not fat and does not slow CMS
-Simple usage
+- Unlimited number of groups
+- One product can be assigned to multiple groups
+- Products display randomly
+- Not fat and does not slow CMS
+- Simple usage
+
+==========
+Install:
