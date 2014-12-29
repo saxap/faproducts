@@ -124,8 +124,7 @@ class ControllerModuleFAproduct extends Controller {
 		$this->load->model('design/layout');
 		
 		$layouts_full = $this->model_design_layout->getLayouts();
-		$layouts_full2[0] = $layouts_full[9];
-		$this->data['layouts'] = $layouts_full2;
+		$this->data['layouts'] = $layouts_full;
 					
 		
 		$this->template = 'module/faproduct.tpl';
